@@ -1,12 +1,15 @@
 """Recompute final validation losses and verify all local checkpoints."""
-import sys,json,csv,torch
+import argparse,json,csv,torch
 from pathlib import Path
 from experiments import MODEL_KEYS,loss,batch,digest
 from model import GPT
 torch.set_num_threads(4)
 root=Path(__file__).resolve().parent
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--results-root',type=Path,default=root/'results/controlled')
+args=parser.parse_args()
 data=torch.load(root/'data/validation_tokens.pt',weights_only=True,map_location='cpu')
-for folder in sorted((root/'results/controlled').iterdir()):
+for folder in sorted(args.results_root.iterdir()):
  c=torch.load(folder/'checkpoint.pt',weights_only=True,map_location='cpu'); conf=c['config']; assert c['step']==3000
  m=GPT(**{k:conf[k] for k in MODEL_KEYS});m.load_state_dict(c['model'],strict=True);m.eval()
  rng=torch.Generator().manual_seed(44)
@@ -14,6 +17,9 @@ for folder in sorted((root/'results/controlled').iterdir()):
  rows=list(csv.DictReader((folder/'loss.csv').open()));assert abs(v-float(rows[-1]['val_loss']))<1e-7,(folder,v)
  print(folder.name,'step 3000, strict load, validation recomputation MATCH',v,flush=True)
  del m,c
+if not (root/'checkpoints/baseline.pt').is_file():
+ print('Historical checkpoint unavailable; preserved CSV remains in git. Historical checkpoint verification skipped.')
+ raise SystemExit(0)
 c=torch.load(root/'checkpoints/baseline.pt',weights_only=True,map_location='cpu');assert c['step']==3000
 m=GPT(**{k:c['config'][k] for k in MODEL_KEYS if k not in ('use_rope','activation')});m.load_state_dict(c['model'],strict=True)
 p=json.loads((root/'data/provenance.json').read_text())['files']

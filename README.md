@@ -68,10 +68,12 @@ python test_model.py
 python test_tokenizer.py
 python test_loss.py
 python experiments.py --tiny --steps 2 --eval-batches 1 --output results/verification_new
-python verify_experiments.py
-python plot_results.py
+python verify_experiments.py --results-root results/reproduction_seed42
+python plot_results.py --logs-only
 python draw_architecture.py
 ```
+
+`verify_experiments.py` recomputes final validation losses from local training checkpoints and compares them with CSVs. The preserved historical checkpoint is checked when available locally. `plot_results.py --logs-only` renders the committed published logs without requiring excluded checkpoints.
 
 The tests verify causal attention, RoPE norm preservation, finite gradients, matching initial weights across treatments, repeatable batch selection, and immediate EOS termination. Tiny runs are smoke tests, never experimental evidence. `test_tokenizer.py` creates a disposable ignored local pickle. Historical `train_smoke.py` and the standalone `generate.py` demo target an old smoke checkpoint and are not required by this workflow.
 

@@ -20,7 +20,7 @@ def save_stories(split, max_stories):
       story = example["text"].strip()
       if not story:
         continue
-      file.write(json.dumps({"text": story}, ensure_ascii=False)+ "\n")  
+      file.write(json.dumps({"text": story}, ensure_ascii=False)+ "\n")
       saved += 1
       if saved >= max_stories:
         break
