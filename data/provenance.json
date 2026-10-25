@@ -1,0 +1,39 @@
+{
+  "files": {
+    "data/train.jsonl": {
+      "sha256": "a551d5f07c4c6947c82e06583047b3329c5885db715da0cfdae7237dd01de830",
+      "bytes": 8952799
+    },
+    "data/validation.jsonl": {
+      "sha256": "4725f9cac569295b31f34e806b15e59993eceaa4c686463a48dd5995f98dfa03",
+      "bytes": 815227
+    },
+    "data/train_tokens.pt": {
+      "sha256": "0ab1d9b1d480a18cdb8b93e872304f4bc6b69a28bd855838aa1992af8dbdf248",
+      "bytes": 29892044,
+      "tokens": 3736309,
+      "dtype": "torch.int64"
+    },
+    "data/validation_tokens.pt": {
+      "sha256": "92455b847cb391266d42252646fc17efcc4e725e832ff8d1135d3ed6a89fb013",
+      "bytes": 2685999,
+      "tokens": 335543,
+      "dtype": "torch.int64"
+    },
+    "data/bpe_merges.pkl": {
+      "sha256": "5b0d1db77e7f2ebaa01e57103924aae84c39aef43d9cdd182d6847d5be073cb0",
+      "bytes": 2520
+    },
+    "checkpoints/baseline.pt": {
+      "sha256": "a0e34220bf9b6df9b19d957d1c32cba26f288e5a1445ae99560c0135b3b20661",
+      "bytes": 174961713
+    },
+    "results/baseline.csv": {
+      "sha256": "95c1329705ef396db46bb14786dfdb3e31e77dba7f7843aee7f44294e07ead0e",
+      "bytes": 1424
+    }
+  },
+  "dataset": "roneneldan/TinyStories",
+  "cached_revision": "f54c09fd23315a6f9c86f9dc80f725de7d8f9c64",
+  "note": "Revision read from local cache; historical downloader did not record revision. Raw data hashes are authoritative."
+}

@@ -1,0 +1,19 @@
+flowchart TD
+  I[Token IDs B × T] --> E[Learned token embedding 513 × 384]
+  E --> X[Block input x]
+  subgraph Block[Pre-norm Transformer block × 8]
+    X --> N1[RMSNorm eps 1e-8]
+    N1 --> QKV[Bias-free Q K V projections; 6 heads × 64]
+    QKV --> R[RoPE on Q and K; V unchanged]
+    R --> A[Causal scaled dot-product attention; output projection]
+    A --> S1[Residual add x + attention]
+    X --> S1
+    S1 --> N2[RMSNorm eps 1e-8]
+    N2 --> F[Biased linear 384→1536; ReLU; linear 1536→384]
+    F --> S2[Residual add]
+    S1 --> S2
+  end
+  S2 --> N3[Final RMSNorm]
+  N3 --> H[Untied bias-free LM head 384→513]
+  H --> L[Logits B × T × 513]
+  L --> C[Next-token cross entropy]

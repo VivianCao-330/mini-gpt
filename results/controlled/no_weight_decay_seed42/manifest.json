@@ -1,0 +1,36 @@
+{
+  "config": {
+    "vocab_size": 513,
+    "d_model": 384,
+    "n_heads": 6,
+    "d_ff": 1536,
+    "n_layers": 8,
+    "use_rope": true,
+    "activation": "relu",
+    "batch_size": 4,
+    "context_length": 128,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.0,
+    "seed": 42,
+    "max_steps": 3000,
+    "eval_interval": 250,
+    "eval_batches": 20
+  },
+  "variant": "no_weight_decay",
+  "device": "cpu",
+  "torch": "2.14.1",
+  "python": "3.13.15",
+  "data_sha256": {
+    "train_tokens.pt": "0ab1d9b1d480a18cdb8b93e872304f4bc6b69a28bd855838aa1992af8dbdf248",
+    "validation_tokens.pt": "92455b847cb391266d42252646fc17efcc4e725e832ff8d1135d3ed6a89fb013"
+  },
+  "source_sha256": {
+    "model.py": "11092310b5c25b0fda0b0f14f5777f991abf9cc803d0e19b13cde2ecc90b2f4b",
+    "experiments.py": "d00a1b6f339f9504d037f87ec51638c9940b226edb3d8a8a06968595f7ea7cbd"
+  },
+  "parameters": 14571648,
+  "validation_seed": 44,
+  "status": "completed",
+  "note": "Fresh start; fixed validation windows; CPU deterministic algorithms; cross-device bitwise equality is not promised.",
+  "checkpoint_sha256": "c7a19531d51af058b5c8ea095a2f48c495f82f9833c2ac5fade93af98b60a9a5"
+}
