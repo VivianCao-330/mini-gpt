@@ -1,0 +1,8 @@
+{
+  "activation": "relu",
+  "seed": 2026,
+  "max_new_tokens": 100,
+  "exact_saved_sample_match": true,
+  "swiglu_exact_saved_sample_match": true,
+  "sampling_source_sha256": "86d138a86a496c6aa557ee5957e700c09c2be3e988d48cd2e3164d9957cab808"
+}

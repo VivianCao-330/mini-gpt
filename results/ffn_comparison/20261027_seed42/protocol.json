@@ -1,0 +1,30 @@
+{
+  "status": "completed",
+  "seed": 42,
+  "steps": 3000,
+  "eval_interval": 250,
+  "eval_batches": 20,
+  "threads": 4,
+  "device": "cpu",
+  "python": "3.13.15",
+  "torch": "2.14.1",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "source_sha256": {
+    "model.py": "0d1d849eec7616d57cc009ae352db1563432feb7bbd471cc158536881f13c535",
+    "activation_experiments.py": "c875f13197a02e4229ab0fa4df02c6169808fb1cfb131679a550035b8e94f2c8",
+    "experiments.py": "d00a1b6f339f9504d037f87ec51638c9940b226edb3d8a8a06968595f7ea7cbd",
+    "generate.py": "75c02f7deff29f6c903ae010072b9614f58369fdae466549fdabbcaf1c7e0870",
+    "tokenizer.py": "cecbc57aaa851e6fbcb3dc4d212eaac1cab91790e5408245cc26cc5dac74fdb5",
+    "summarize_ffn.py": "a078fbc6ace8ed88ddd8aca053ca41b422172e6297d3d5eddb5d3eabdf1aff9a",
+    "test_ffn_comparison.py": "041f41f28c7e57712856ed275f80185fc56958d122cc4cd2f95c4ff0a0eb4436"
+  },
+  "data_sha256": {
+    "train_tokens.pt": "0ab1d9b1d480a18cdb8b93e872304f4bc6b69a28bd855838aa1992af8dbdf248",
+    "validation_tokens.pt": "92455b847cb391266d42252646fc17efcc4e725e832ff8d1135d3ed6a89fb013",
+    "bpe_merges.pkl": "5b0d1db77e7f2ebaa01e57103924aae84c39aef43d9cdd182d6847d5be073cb0"
+  },
+  "git_parent_commit": "ab17b3ddc0c262b97ade8d3e9be953afbc3447c1",
+  "initialization": "Independent stable SHA-256-derived seed per named module; common modules match across all designs.",
+  "comparison": "All FFNs bias=False; 1536 ordinary width vs 1024 SwiGLU width. Same matrix/total parameter budget.",
+  "limits": "One seed; sampled fixed train/validation windows, not complete datasets; sequential timings are not controlled speed benchmarks."
+}

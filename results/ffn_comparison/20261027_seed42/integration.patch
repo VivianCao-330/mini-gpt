@@ -1,0 +1,73 @@
+diff --git a/model.py b/model.py
+index 0631818..fa77348 100644
+--- a/model.py
++++ b/model.py
+@@ -76,18 +76,18 @@ class SwiGLUFeedForward(nn.Module):
+         self.up_proj=nn.Linear(d_model,d_hidden,bias=bias)
+         self.down_proj=nn.Linear(d_hidden,d_model,bias=bias)
+     def forward(self,x):
+-        gate=nn.functional(self.gate_proj(x))
++        gate=nn.functional.silu(self.gate_proj(x))
+         up=self.up_proj(x)
+         hidden=gate*up
+         return self.down_proj(hidden)
+ class FeedForward(nn.Module):
+-    def __init__(self, d_model, d_ff, activation="relu"):
++    def __init__(self, d_model, d_ff, activation="relu", bias=True):
+         super().__init__()
+         if activation not in ("relu", "gelu", "silu"):
+             raise ValueError("activation must be relu, gelu, or silu")
+         self.activation = activation
+-        self.fc1=nn.Linear(d_model,d_ff)
+-        self.fc2=nn.Linear(d_ff,d_model)
++        self.fc1=nn.Linear(d_model,d_ff,bias=bias)
++        self.fc2=nn.Linear(d_ff,d_model,bias=bias)
+     def forward(self,x):
+         x=self.fc1(x)
+         if self.activation == "relu":
+@@ -99,21 +99,24 @@ class FeedForward(nn.Module):
+         x=self.fc2(x)
+         return x
+ class TransformerBlock(nn.Module):
+-    def __init__(self,d_model, n_heads,d_ff, use_rope=True, activation="relu"):
++    def __init__(self,d_model, n_heads,d_ff, use_rope=True, activation="relu", ffn_bias=None):
+         super().__init__()
+         self.norm1=RMSNorm(d_model)
+         self.attention=CausalSelfAttention(d_model,n_heads,use_rope)
+         self.norm2=RMSNorm(d_model)
+-        self.ffn=FeedForward(d_model,d_ff,activation)
++        if activation == "swiglu":
++            self.ffn=SwiGLUFeedForward(d_model,d_ff,bias=False if ffn_bias is None else ffn_bias)
++        else:
++            self.ffn=FeedForward(d_model,d_ff,activation,bias=True if ffn_bias is None else ffn_bias)
+     def forward(self,x):
+         x=x+self.attention(self.norm1(x))
+         x=x+self.ffn(self.norm2(x))
+         return x
+ class GPT(nn.Module):
+-    def __init__(self,vocab_size,d_model,n_heads,d_ff,n_layers,use_rope=True,activation="relu"):
++    def __init__(self,vocab_size,d_model,n_heads,d_ff,n_layers,use_rope=True,activation="relu",ffn_bias=None):
+         super().__init__()
+         self.embedding=TokenEmbedding(vocab_size,d_model)
+-        self.blocks=nn.ModuleList([TransformerBlock(d_model,n_heads,d_ff,use_rope,activation) for _ in range(n_layers)])
++        self.blocks=nn.ModuleList([TransformerBlock(d_model,n_heads,d_ff,use_rope,activation,ffn_bias) for _ in range(n_layers)])
+         self.final_norm=RMSNorm(d_model)
+         self.lm_head=nn.Linear(d_model,vocab_size,bias=False)
+     def forward(self,token_ids):
+diff --git a/sample_text.py b/sample_text.py
+index 3bbe86f..c79ce00 100644
+--- a/sample_text.py
++++ b/sample_text.py
+@@ -29,9 +29,11 @@ def main():
+     c = dict(use_rope=True, activation='relu', **{k:v for k,v in checkpoint['config'].items() if k not in ('use_rope','activation')})
+     c.update({k:checkpoint['config'][k] for k in ('use_rope','activation') if k in checkpoint['config']})
+     if eos + 1 != c['vocab_size']: raise ValueError('Tokenizer/checkpoint vocabulary mismatch')
+-    model = GPT(**{k:c[k] for k in MODEL_KEYS}).to(a.device)
++    model = GPT(**{k:c[k] for k in MODEL_KEYS}, ffn_bias=c.get('ffn_bias')).to(a.device)
+     model.load_state_dict(checkpoint['model'])
+     prompt = torch.tensor([encode(a.prompt, merges)], dtype=torch.long, device=a.device)
++    # Model construction consumes random numbers; seed sampling after loading weights.
++    torch.manual_seed(a.seed)
+     ids = generate(model, prompt, a.max_new_tokens, c['context_length'], eos)[0].tolist()
+     if ids[-1] == eos: ids.pop()
+     # Sampling can end mid UTF-8 sequence; display the replacement character.

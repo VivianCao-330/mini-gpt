@@ -29,9 +29,11 @@ def main():
     c = dict(use_rope=True, activation='relu', **{k:v for k,v in checkpoint['config'].items() if k not in ('use_rope','activation')})
     c.update({k:checkpoint['config'][k] for k in ('use_rope','activation') if k in checkpoint['config']})
     if eos + 1 != c['vocab_size']: raise ValueError('Tokenizer/checkpoint vocabulary mismatch')
-    model = GPT(**{k:c[k] for k in MODEL_KEYS}).to(a.device)
+    model = GPT(**{k:c[k] for k in MODEL_KEYS}, ffn_bias=c.get('ffn_bias')).to(a.device)
     model.load_state_dict(checkpoint['model'])
     prompt = torch.tensor([encode(a.prompt, merges)], dtype=torch.long, device=a.device)
+    # Model construction consumes random numbers; seed sampling after loading weights.
+    torch.manual_seed(a.seed)
     ids = generate(model, prompt, a.max_new_tokens, c['context_length'], eos)[0].tolist()
     if ids[-1] == eos: ids.pop()
     # Sampling can end mid UTF-8 sequence; display the replacement character.

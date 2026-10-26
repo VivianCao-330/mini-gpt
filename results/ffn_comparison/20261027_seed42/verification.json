@@ -1,0 +1,73 @@
+{
+  "checkpoints": "all four hash and strict-load checks passed",
+  "validation": "all four final CSV losses reproduced from checkpoints",
+  "common_initialization": "matching outside FFN; all initial weights match for ReLU/GELU/SiLU",
+  "source_snapshots": "hashes verified",
+  "data": "validation tensor hash verified",
+  "runs": [
+    {
+      "activation": "relu",
+      "steps": 3000,
+      "parameters": 14556288,
+      "hidden_width": 1536,
+      "ffn_bias": false,
+      "final_train_minibatch": 2.2881298065185547,
+      "final_train_eval": 2.082333195209503,
+      "final_val": 2.083307284116745,
+      "best_recorded_val": 2.083307284116745,
+      "best_step": 3000,
+      "val_perplexity": 8.030985792454148,
+      "elapsed_seconds": 218.6011987499951,
+      "final_checkpoint_validation_verified": true,
+      "delta_val_vs_relu": 0.0
+    },
+    {
+      "activation": "gelu",
+      "steps": 3000,
+      "parameters": 14556288,
+      "hidden_width": 1536,
+      "ffn_bias": false,
+      "final_train_minibatch": 2.2772319316864014,
+      "final_train_eval": 2.051521587371826,
+      "final_val": 2.068172687292099,
+      "best_recorded_val": 2.068172687292099,
+      "best_step": 3000,
+      "val_perplexity": 7.91035521057956,
+      "elapsed_seconds": 229.32082262499898,
+      "final_checkpoint_validation_verified": true,
+      "delta_val_vs_relu": -0.015134596824645907
+    },
+    {
+      "activation": "silu",
+      "steps": 3000,
+      "parameters": 14556288,
+      "hidden_width": 1536,
+      "ffn_bias": false,
+      "final_train_minibatch": 2.3982889652252197,
+      "final_train_eval": 2.1649294555187226,
+      "final_val": 2.174056535959244,
+      "best_recorded_val": 2.174056535959244,
+      "best_step": 3000,
+      "val_perplexity": 8.79388449333288,
+      "elapsed_seconds": 224.37700912499713,
+      "final_checkpoint_validation_verified": true,
+      "delta_val_vs_relu": 0.09074925184249905
+    },
+    {
+      "activation": "swiglu",
+      "steps": 3000,
+      "parameters": 14556288,
+      "hidden_width": 1024,
+      "ffn_bias": false,
+      "final_train_minibatch": 2.1781065464019775,
+      "final_train_eval": 1.9797145307064057,
+      "final_val": 1.9911308884620667,
+      "best_recorded_val": 1.9911308884620667,
+      "best_step": 3000,
+      "val_perplexity": 7.32381149474907,
+      "elapsed_seconds": 229.53234554200026,
+      "final_checkpoint_validation_verified": true,
+      "delta_val_vs_relu": -0.09217639565467817
+    }
+  ]
+}

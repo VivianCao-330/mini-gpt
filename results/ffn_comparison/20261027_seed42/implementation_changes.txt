@@ -1,0 +1,93 @@
+mini-gpt FFN comparison: implementation and reproduction
+
+Purpose
+Compare ReLU, GELU, SiLU, and SwiGLU as FFN designs. Ordinary FFNs have
+hidden width 1536; SwiGLU uses floor(2 * d_ff / 3) = 1024. All four
+experimental FFNs disable biases. Each FFN has 1,179,648 parameters and
+each 8-layer GPT has 14,556,288 parameters. This is a parameter-matched
+architecture comparison, not an activation-only comparison for SwiGLU.
+
+Exact production changes
+1. model.py / SwiGLUFeedForward.forward:
+   Correct nn.functional(...) to nn.functional.silu(...).
+   nn.functional is a module; silu is the actual callable function.
+2. model.py / FeedForward.__init__:
+   Add bias=True and pass bias=bias to both Linear layers. Existing
+   callers retain their original biases and state-dictionary keys.
+   Existing ReLU/GELU/SiLU forward branches are preserved.
+3. model.py / TransformerBlock.__init__:
+   Add ffn_bias=None. Select SwiGLUFeedForward for activation='swiglu';
+   otherwise keep FeedForward. None preserves the existing defaults:
+   ordinary FFNs use biases; SwiGLU uses no biases. Passing False
+   explicitly disables FFN biases for every comparison condition.
+4. model.py / GPT.__init__:
+   Add ffn_bias=None and pass the choice into every TransformerBlock.
+   The GPT and block forward methods, attention, embeddings, norms,
+   output head, residual paths, and tokenizer calculations are unchanged.
+5. sample_text.py:
+   Read optional saved ffn_bias when reconstructing a checkpoint. Old
+   checkpoints omit this field and retain their historical defaults.
+   This prevents no-bias checkpoints from being rebuilt with bias tensors.
+   Reset sampling seed after constructing/loading the model, so the CLI
+   reproduces saved samples with the same prompt and seed.
+
+New files
+- activation_experiments.py: isolated fresh-run runner for these four FFNs.
+- test_ffn_comparison.py: branch selection, exact gate calculation,
+  input/output shapes, gradients, parameter counts, legacy defaults,
+  and common-module initialization checks.
+- summarize_ffn.py: final-checkpoint verification, CSV summaries,
+  PNG/SVG curves, and a standalone HTML report.
+- This guide. No old source files or experiment results were deleted.
+
+Data and experimental controls
+Use the existing train/validation token tensors; record their SHA-256
+fingerprints and the tokenizer fingerprint. No preprocessing is rerun.
+Train for 3000 updates with batch size 4, context 128, learning rate
+0.0003, AdamW weight decay 0.01, RoPE on. Evaluate at step 1 and every
+250 steps, including the final step. Use CPU, four threads, and strict
+deterministic algorithms. No automatic resume or output overwrite.
+
+For seed 42, the training sampler uses generator 43; fixed validation
+windows use generator 44; fixed train-evaluation windows use generator 45.
+Both evaluation losses average 20 minibatches after a model update.
+Training-minibatch loss before the update is stored as a separate field.
+Evaluation windows can overlap and do not cover the entire corpus.
+
+Initialization uses a stable seed derived from the experiment seed and
+each module's name. Shared embedding/attention/norm/output parameters
+start identically across all four models; all parameters start identically
+for ReLU/GELU/SiLU. SwiGLU FFN shapes differ, so its FFN tensors cannot
+be equal to ordinary FFN tensors. Fingerprints verify these statements.
+
+This initialization and the common no-bias setting differ from the old
+published experiments. Use this suite's fresh ReLU run as the comparator;
+do not interpret differences from the historical baseline as pure
+activation effects. One seed gives descriptive evidence, not significance.
+
+Reproduce in a NEW output directory, from the repository root:
+  python activation_experiments.py --output results/ffn_comparison/reproduction_seed42 --seed 42 --steps 3000 --eval-interval 250 --eval-batches 20 --threads 4
+
+Verify checkpoints and rebuild the report (does not retrain):
+  python summarize_ffn.py results/ffn_comparison/20261027_seed42
+
+Sample a new checkpoint:
+  python sample_text.py --checkpoint results/ffn_comparison/20261027_seed42/swiglu_seed42/checkpoint.pt --seed 2026 --max-new-tokens 100
+
+Records in each suite
+protocol.json: controls, software, parent Git commit, source/data hashes,
+status and any failure. The exact source snapshots, including uncommitted
+model edits, are in source/; the parent commit alone is not the run source.
+Each FFN directory: manifest.json, loss.csv, checkpoint.pt, samples.json.
+Summary/report: summary.csv, verification.json, report.html, figures/loss.png,
+and figures/loss.svg. Only completed runs enter the final report. Best loss
+means a recorded evaluation minimum; only final checkpoints are saved.
+Checkpoint weights stay excluded from git. Samples use the same three
+prompts, seed 2026, and a 100-token generation budget for each condition.
+Sequential elapsed times include evaluation; they are not speed benchmarks.
+
+Preservation
+The original learning implementation, historical checkpoint, and
+all older results remain untouched. Training reads the existing data links
+but writes only under the new experiment directory. No scheduled task or
+future report automation is created by this work.

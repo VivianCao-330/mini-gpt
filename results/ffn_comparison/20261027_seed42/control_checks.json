@@ -1,0 +1,8 @@
+{
+  "preserved_protected_files": 55,
+  "original_results_and_learning_source_unchanged": true,
+  "old_experiments_py_unchanged": true,
+  "shared_configuration_except_activation": true,
+  "identical_final_training_sampler_states": true,
+  "sampling_script_updated_for_optional_ffn_bias_and_reproducible_seed": true
+}

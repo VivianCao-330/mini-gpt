@@ -1,0 +1,46 @@
+{
+  "config": {
+    "vocab_size": 513,
+    "d_model": 384,
+    "n_heads": 6,
+    "d_ff": 1536,
+    "n_layers": 8,
+    "use_rope": true,
+    "activation": "relu",
+    "batch_size": 4,
+    "context_length": 128,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.01,
+    "ffn_bias": false,
+    "seed": 42,
+    "max_steps": 3000,
+    "eval_interval": 250,
+    "eval_batches": 20
+  },
+  "activation": "relu",
+  "device": "cpu",
+  "parameters": 14556288,
+  "ffn_parameters": 1179648,
+  "effective_hidden_width": 1536,
+  "common_initial_sha256": "0e039c95fb0b8ebd6178bcf4e1a045655dc4975e3381d2ba4a3025747be6f1b4",
+  "all_initial_sha256": "587d986fcf74c84f74f0d71e0f5186f698195cdf856a23f333ffa73fd30b910a",
+  "data_sha256": {
+    "train_tokens.pt": "0ab1d9b1d480a18cdb8b93e872304f4bc6b69a28bd855838aa1992af8dbdf248",
+    "validation_tokens.pt": "92455b847cb391266d42252646fc17efcc4e725e832ff8d1135d3ed6a89fb013",
+    "bpe_merges.pkl": "5b0d1db77e7f2ebaa01e57103924aae84c39aef43d9cdd182d6847d5be073cb0"
+  },
+  "source_sha256": {
+    "model.py": "0d1d849eec7616d57cc009ae352db1563432feb7bbd471cc158536881f13c535",
+    "activation_experiments.py": "c875f13197a02e4229ab0fa4df02c6169808fb1cfb131679a550035b8e94f2c8",
+    "experiments.py": "d00a1b6f339f9504d037f87ec51638c9940b226edb3d8a8a06968595f7ea7cbd",
+    "generate.py": "75c02f7deff29f6c903ae010072b9614f58369fdae466549fdabbcaf1c7e0870",
+    "tokenizer.py": "cecbc57aaa851e6fbcb3dc4d212eaac1cab91790e5408245cc26cc5dac74fdb5",
+    "summarize_ffn.py": "a078fbc6ace8ed88ddd8aca053ca41b422172e6297d3d5eddb5d3eabdf1aff9a",
+    "test_ffn_comparison.py": "041f41f28c7e57712856ed275f80185fc56958d122cc4cd2f95c4ff0a0eb4436"
+  },
+  "train_sampling_seed": 43,
+  "validation_seed": 44,
+  "train_evaluation_seed": 45,
+  "status": "completed",
+  "checkpoint_sha256": "f02163af9c83ddd59fb256d5d7716bd6ebe0b1fdb1443cd6720037a1f9a1e543"
+}

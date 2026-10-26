@@ -68,35 +68,55 @@ class RoPE(nn.Module):
         y2=x1*sin+x2*cos
         rotated=torch.stack([y1,y2],dim=-1)
         return rotated.reshape(B,H,T,D)
-class FeedForward(nn.Module):
-    def __init__(self, d_model, d_ff, activation="relu"):
+class SwiGLUFeedForward(nn.Module):
+    def __init__(self,d_model,d_ff,bias=False):
         super().__init__()
-        if activation not in ("relu", "gelu"):
-            raise ValueError("activation must be relu or gelu")
+        d_hidden=(2*d_ff)//3
+        self.gate_proj=nn.Linear(d_model,d_hidden,bias=bias)
+        self.up_proj=nn.Linear(d_model,d_hidden,bias=bias)
+        self.down_proj=nn.Linear(d_hidden,d_model,bias=bias)
+    def forward(self,x):
+        gate=nn.functional.silu(self.gate_proj(x))
+        up=self.up_proj(x)
+        hidden=gate*up
+        return self.down_proj(hidden)
+class FeedForward(nn.Module):
+    def __init__(self, d_model, d_ff, activation="relu", bias=True):
+        super().__init__()
+        if activation not in ("relu", "gelu", "silu"):
+            raise ValueError("activation must be relu, gelu, or silu")
         self.activation = activation
-        self.fc1=nn.Linear(d_model,d_ff)
-        self.fc2=nn.Linear(d_ff,d_model)
+        self.fc1=nn.Linear(d_model,d_ff,bias=bias)
+        self.fc2=nn.Linear(d_ff,d_model,bias=bias)
     def forward(self,x):
         x=self.fc1(x)
-        x=torch.relu(x) if self.activation == "relu" else torch.nn.functional.gelu(x)
+        if self.activation == "relu":
+            x=torch.relu(x)
+        elif self.activation == "gelu":
+            x=torch.nn.functional.gelu(x)
+        else:
+            x=torch.nn.functional.silu(x)
         x=self.fc2(x)
         return x
 class TransformerBlock(nn.Module):
-    def __init__(self,d_model, n_heads,d_ff, use_rope=True, activation="relu"):
+    def __init__(self,d_model, n_heads,d_ff, use_rope=True, activation="relu", ffn_bias=None):
         super().__init__()
         self.norm1=RMSNorm(d_model)
         self.attention=CausalSelfAttention(d_model,n_heads,use_rope)
         self.norm2=RMSNorm(d_model)
-        self.ffn=FeedForward(d_model,d_ff,activation)
+        if activation == "swiglu":
+            self.ffn=SwiGLUFeedForward(d_model,d_ff,bias=False if ffn_bias is None else ffn_bias)
+        else:
+            self.ffn=FeedForward(d_model,d_ff,activation,bias=True if ffn_bias is None else ffn_bias)
     def forward(self,x):
         x=x+self.attention(self.norm1(x))
         x=x+self.ffn(self.norm2(x))
         return x
 class GPT(nn.Module):
-    def __init__(self,vocab_size,d_model,n_heads,d_ff,n_layers,use_rope=True,activation="relu"):
+    def __init__(self,vocab_size,d_model,n_heads,d_ff,n_layers,use_rope=True,activation="relu",ffn_bias=None):
         super().__init__()
         self.embedding=TokenEmbedding(vocab_size,d_model)
-        self.blocks=nn.ModuleList([TransformerBlock(d_model,n_heads,d_ff,use_rope,activation) for _ in range(n_layers)])
+        self.blocks=nn.ModuleList([TransformerBlock(d_model,n_heads,d_ff,use_rope,activation,ffn_bias) for _ in range(n_layers)])
         self.final_norm=RMSNorm(d_model)
         self.lm_head=nn.Linear(d_model,vocab_size,bias=False)
     def forward(self,token_ids):
