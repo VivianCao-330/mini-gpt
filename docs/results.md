@@ -23,12 +23,10 @@ Positive validation deltas mean worse loss than the matched control. Disabling R
 
 One paired seed and 20 fixed validation minibatches do not support statistical significance claims. Training curves report individual minibatches and are noisy. Validation uses overlapping windows sampled with replacement, not the entire held-out corpus. Do not infer a robust train/validation gap from these mismatched estimators. Perplexity is token-level exp(loss) for this 513-token vocabulary.
 
-## Status and deferred work
+## Experiment status
 
 - Completed: preserved historical baseline; fresh control; RoPE-off, GELU, and no-weight-decay runs; plots and checkpoint verification.
 - Verification only: tiny two-step runs, repeatability runs, and ten-step full-model benchmark, excluded from this table.
 - Planned: repeated seeds and full-validation evaluation. No results claimed.
-- Three research papers: deferred to Week 2 Day 5 at the user’s direction.
-- Foundation Gate: deferred until teachers are available.
 
 Run `python plot_results.py` to regenerate this report, summary.csv, and both plot formats from the raw logs and local checkpoints.

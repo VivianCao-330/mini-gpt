@@ -23,5 +23,3 @@ Historical data download did not record a dataset revision. The revised download
 ## Interpretation limits and next work
 
 Train loss is the last sampled training minibatch before its update. Validation loss is measured after that update, averaged over fixed held-out windows. Their difference is not a robust generalization-gap estimate. Token perplexity is exp(validation loss), specific to this tokenizer and sample. One seed cannot establish statistical significance or broad superiority; fixed windows may favor particular model behavior. Repeated seeds and full-validation evaluation remain planned.
-
-The three research papers remain scheduled for Week 2 Day 5 at the user's direction. Foundation Gate is deferred until teachers are available. Neither task is marked complete.

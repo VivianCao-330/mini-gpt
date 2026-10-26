@@ -61,12 +61,10 @@ lines += ['', '![Controlled training and validation loss](controlled-loss.png)',
 f"RoPE-off finishes {summary[1]['delta_vs_control']:+.5f} nats/token above the matched control, a substantial deterioration in this run. GELU changes final validation loss by {summary[2]['delta_vs_control']:+.5f}; zero decay changes it by {summary[3]['delta_vs_control']:+.5f}. These small latter differences are insufficient to claim a reliable improvement or harm from one seed. Retaining RoPE is supported by this paired run; activation and weight-decay choices remain unresolved without replication.", '',
 'Positive validation deltas mean worse loss than the matched control. Disabling RoPE removes explicit positional encoding from Q/K; causal masking remains. GELU changes only the FFN nonlinearity. Zero weight decay changes only the AdamW decay coefficient. These comparisons hold data, initial weights, sampled training windows, evaluation windows, steps, and optimizer settings constant.', '',
 'One paired seed and 20 fixed validation minibatches do not support statistical significance claims. Training curves report individual minibatches and are noisy. Validation uses overlapping windows sampled with replacement, not the entire held-out corpus. Do not infer a robust train/validation gap from these mismatched estimators. Perplexity is token-level exp(loss) for this 513-token vocabulary.', '',
-'## Status and deferred work', '',
+'## Experiment status', '',
 '- Completed: preserved historical baseline; fresh control; RoPE-off, GELU, and no-weight-decay runs; plots and checkpoint verification.',
 '- Verification only: tiny two-step runs, repeatability runs, and ten-step full-model benchmark, excluded from this table.',
 '- Planned: repeated seeds and full-validation evaluation. No results claimed.',
-'- Three research papers: deferred to Week 2 Day 5 at the user’s direction.',
-'- Foundation Gate: deferred until teachers are available.', '',
 'Run `python plot_results.py` to regenerate this report, summary.csv, and both plot formats from the raw logs and local checkpoints.']
 (D/'results.md').write_text('\n'.join(lines)+'\n')
 print(json.dumps(summary,indent=2))

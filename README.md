@@ -2,7 +2,7 @@
 
 A small, from-scratch decoder-only Transformer trained on TinyStories, with a byte-level BPE tokenizer and reproducible controlled ablations. Architecture: 8 layers, width 384, 6 heads, FFN width 1536, RMSNorm, RoPE, ReLU, and an untied language-model head; **14,571,648 parameters**.
 
-The original 3000-step baseline and its CSV are preserved. Fresh controlled runs separately test RoPE-off, GELU, and zero weight decay against a fresh baseline. Read [actual results](docs/results.md), [technical note](docs/technical-note.md), and [architecture](docs/architecture.png). The three papers are deferred to Week 2 Day 5; Foundation Gate waits for teachers.
+The original 3000-step baseline and its CSV are preserved. Fresh controlled runs separately test RoPE-off, GELU, and zero weight decay against a fresh baseline. Read [actual results](docs/results.md), [technical note](docs/technical-note.md), and [architecture](docs/architecture.png).
 
 ## Setup
 
